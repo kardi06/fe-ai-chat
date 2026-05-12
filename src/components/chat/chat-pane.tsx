@@ -1,9 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useSessionDetail } from '@/hooks/use-session-detail';
 import { useStreamChat } from '@/hooks/use-stream-chat';
+import { EmptyChatState } from './empty-chat-state';
 import { MessageInput } from './message-input';
 import { MessageList } from './message-list';
 
@@ -12,6 +14,7 @@ interface ChatPaneProps {
 }
 
 export function ChatPane({ sessionId }: ChatPaneProps) {
+  const [input, setInput] = useState('');
   const { data, isPending, isError } = useSessionDetail(sessionId);
   const { streamingMessage, isStreaming, send, stop } = useStreamChat(sessionId);
 
@@ -38,12 +41,17 @@ export function ChatPane({ sessionId }: ChatPaneProps) {
   }
 
   const allMessages = streamingMessage ? [...data.messages, streamingMessage] : data.messages;
+  const showEmptyState = allMessages.length === 0;
 
-  const handleSend = (content: string) => {
+  const handleSend = () => {
+    const content = input.trim();
+    if (!content) return;
+    setInput('');
     send(content).catch((err: unknown) => {
       toast.error('Failed to send message', {
         description: err instanceof Error ? err.message : 'Unknown error',
       });
+      setInput(content);
     });
   };
 
@@ -52,9 +60,19 @@ export function ChatPane({ sessionId }: ChatPaneProps) {
       <header className="flex h-12 items-center border-b border-border px-6">
         <h2 className="truncate text-sm font-medium">{data.session.title}</h2>
       </header>
-      <MessageList messages={allMessages} />
+      {showEmptyState ? (
+        <EmptyChatState onPromptSelect={setInput} />
+      ) : (
+        <MessageList messages={allMessages} />
+      )}
       <div className="border-t border-border">
-        <MessageInput onSend={handleSend} onStop={stop} isStreaming={isStreaming} />
+        <MessageInput
+          value={input}
+          onChange={setInput}
+          onSend={handleSend}
+          onStop={stop}
+          isStreaming={isStreaming}
+        />
       </div>
     </div>
   );

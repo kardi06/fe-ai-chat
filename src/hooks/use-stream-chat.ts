@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useRef, useState } from 'react';
 import { useAppContainer } from '@/components/providers/app-container-provider';
 import { Message } from '@/domain/entities/message';
+import { DEFAULT_TITLE } from '@/domain/entities/session';
 import { makeMessageId } from '@/domain/value-objects/message-id';
 import { makeSessionId } from '@/domain/value-objects/session-id';
 import type { SessionDetail } from '@/application/use-cases/get-session';
@@ -18,7 +19,7 @@ export interface UseStreamChatResult {
 }
 
 export function useStreamChat(sessionIdRaw: string): UseStreamChatResult {
-  const { postMessage, finalizeAssistantMessage, llmStream } = useAppContainer();
+  const { postMessage, finalizeAssistantMessage, generateTitle, llmStream } = useAppContainer();
   const queryClient = useQueryClient();
   const [streamingMessage, setStreamingMessage] = useState<Message | null>(null);
   const [isStreaming, setIsStreaming] = useState(false);
@@ -41,6 +42,8 @@ export function useStreamChat(sessionIdRaw: string): UseStreamChatResult {
         sessionDetailQueryKey(sessionIdRaw),
       );
       const previousMessages = cachedDetail?.messages ?? [];
+      const previousTitle = cachedDetail?.session.title ?? '';
+      const isFirstExchange = previousMessages.length === 0;
 
       let placeholder: Message | null = null;
 
@@ -76,6 +79,23 @@ export function useStreamChat(sessionIdRaw: string): UseStreamChatResult {
             content: placeholder.content,
           });
           queryClient.invalidateQueries({ queryKey: sessionDetailQueryKey(sessionIdRaw) });
+
+          if (isFirstExchange && previousTitle === DEFAULT_TITLE) {
+            const assistantContent = placeholder.content;
+            void generateTitle
+              .execute({
+                sessionId,
+                userMessage: content,
+                assistantMessage: assistantContent,
+              })
+              .then(() => {
+                queryClient.invalidateQueries({ queryKey: sessionDetailQueryKey(sessionIdRaw) });
+                queryClient.invalidateQueries({ queryKey: SESSIONS_QUERY_KEY });
+              })
+              .catch(() => {
+                // title generation is nice-to-have; ignore failures
+              });
+          }
         }
       } catch (err) {
         if (controller.signal.aborted && placeholder && placeholder.content.length > 0) {
@@ -97,7 +117,7 @@ export function useStreamChat(sessionIdRaw: string): UseStreamChatResult {
         abortRef.current = null;
       }
     },
-    [sessionIdRaw, postMessage, finalizeAssistantMessage, llmStream, queryClient],
+    [sessionIdRaw, postMessage, finalizeAssistantMessage, generateTitle, llmStream, queryClient],
   );
 
   return { streamingMessage, isStreaming, send, stop };

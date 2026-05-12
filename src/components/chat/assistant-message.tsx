@@ -1,5 +1,6 @@
 import type { Message } from '@/domain/entities/message';
 import { Markdown } from './markdown';
+import { MessageActions } from './message-actions';
 
 interface AssistantMessageProps {
   message: Message;
@@ -18,7 +19,12 @@ export function AssistantMessage({ message }: AssistantMessageProps) {
     );
   }
 
-  return <Markdown content={message.content} />;
+  return (
+    <div className="group/message flex flex-col gap-1">
+      <Markdown content={message.content} />
+      {message.status === 'complete' && <MessageActions content={message.content} />}
+    </div>
+  );
 }
 
 function TypingIndicator() {

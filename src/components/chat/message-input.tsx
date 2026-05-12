@@ -1,51 +1,41 @@
 'use client';
 
 import { ArrowUp, Square } from 'lucide-react';
-import { useState, type FormEvent, type KeyboardEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 
 interface MessageInputProps {
-  onSend: (content: string) => void;
+  value: string;
+  onChange: (value: string) => void;
+  onSend: () => void;
   onStop: () => void;
   isStreaming: boolean;
 }
 
-export function MessageInput({ onSend, onStop, isStreaming }: MessageInputProps) {
-  const [content, setContent] = useState('');
-  const canSend = content.trim().length > 0 && !isStreaming;
-
-  const submit = () => {
-    if (!canSend) return;
-    onSend(content.trim());
-    setContent('');
-  };
-
-  const handleSubmit = (event: FormEvent) => {
-    event.preventDefault();
-    submit();
-  };
-
-  const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
-      submit();
-    }
-  };
+export function MessageInput({ value, onChange, onSend, onStop, isStreaming }: MessageInputProps) {
+  const canSend = value.trim().length > 0 && !isStreaming;
 
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={(event) => {
+        event.preventDefault();
+        if (canSend) onSend();
+      }}
       className="mx-auto flex w-full max-w-3xl items-end gap-2 px-4 py-3"
     >
       <Textarea
-        value={content}
-        onChange={(event) => setContent(event.target.value)}
-        onKeyDown={handleKeyDown}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            if (canSend) onSend();
+          }
+        }}
         rows={1}
         placeholder="Send a message…"
         disabled={isStreaming}
-        className="max-h-[200px] min-h-10 resize-none"
+        className="max-h-50 min-h-10 resize-none"
       />
       {isStreaming ? (
         <Button
