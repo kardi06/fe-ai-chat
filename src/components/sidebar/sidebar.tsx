@@ -6,6 +6,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { useSessions } from '@/hooks/use-sessions';
 import { groupSessionsByDate } from '@/lib/group-sessions-by-date';
 import { EmptySessions } from './empty-sessions';
+import { NewChatButton } from './new-chat-button';
 import { SessionGroup } from './session-group';
 
 export function Sidebar() {
@@ -14,8 +15,11 @@ export function Sidebar() {
       <header className="flex h-12 items-center px-4">
         <h1 className="text-sm font-semibold tracking-tight">MyConnect.ai</h1>
       </header>
+      <div className="px-3 pb-2">
+        <NewChatButton />
+      </div>
       <ScrollArea className="flex-1">
-        <div className="px-2 py-2">
+        <div className="px-2 pb-2">
           <SessionList />
         </div>
       </ScrollArea>
