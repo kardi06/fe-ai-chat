@@ -1,0 +1,58 @@
+'use client';
+
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
+import { ThemeToggle } from '@/components/theme-toggle';
+import { useSessions } from '@/hooks/use-sessions';
+import { groupSessionsByDate } from '@/lib/group-sessions-by-date';
+import { EmptySessions } from './empty-sessions';
+import { SessionGroup } from './session-group';
+
+export function Sidebar() {
+  return (
+    <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-sidebar md:flex">
+      <header className="flex h-12 items-center px-4">
+        <h1 className="text-sm font-semibold tracking-tight">MyConnect.ai</h1>
+      </header>
+      <ScrollArea className="flex-1">
+        <div className="px-2 py-2">
+          <SessionList />
+        </div>
+      </ScrollArea>
+      <footer className="flex h-12 items-center justify-end border-t border-border px-3">
+        <ThemeToggle />
+      </footer>
+    </aside>
+  );
+}
+
+function SessionList() {
+  const { data: sessions, isPending, isError } = useSessions();
+
+  if (isPending) {
+    return (
+      <div className="flex flex-col gap-2 px-1">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="h-7 w-full rounded-md" />
+        ))}
+      </div>
+    );
+  }
+
+  if (isError) {
+    return <p className="px-2 py-2 text-xs text-destructive">Failed to load conversations.</p>;
+  }
+
+  if (!sessions || sessions.length === 0) {
+    return <EmptySessions />;
+  }
+
+  const groups = groupSessionsByDate(sessions);
+  return (
+    <div className="flex flex-col gap-4">
+      {groups.map((group) => (
+        <SessionGroup key={group.label} group={group} />
+      ))}
+    </div>
+  );
+}
