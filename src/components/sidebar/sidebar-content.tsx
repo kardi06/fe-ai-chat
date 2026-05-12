@@ -1,6 +1,5 @@
 'use client';
 
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { useSessions } from '@/hooks/use-sessions';
@@ -18,11 +17,9 @@ export function SidebarContent() {
       <div className="px-3 pb-3">
         <NewChatButton />
       </div>
-      <ScrollArea className="flex-1">
-        <div className="px-2 pb-2">
-          <SessionList />
-        </div>
-      </ScrollArea>
+      <nav className="scrollbar-thin min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-2 pb-2">
+        <SessionList />
+      </nav>
       <footer className="flex h-12 items-center justify-end border-t border-sidebar-border px-3">
         <ThemeToggle />
       </footer>

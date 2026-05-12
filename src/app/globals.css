@@ -135,6 +135,35 @@
   font-feature-settings: "ss01", "ss02";
 }
 
+/* Radix ScrollArea injects an inline-styled inner <div> with display:table,
+   which prevents children from shrinking/truncating relative to the viewport.
+   Force block so `truncate` on descendants works as expected. */
+[data-radix-scroll-area-viewport] > div {
+  display: block !important;
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: var(--ring);
+}
+
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;

@@ -30,11 +30,11 @@ export function SessionItem({ session }: SessionItemProps) {
         href={href}
         title={session.title}
         onClick={closeSidebar}
-        className="flex min-w-0 flex-1 items-center px-3 py-2 text-sm"
+        className="min-w-0 flex-1 truncate px-3 py-2 text-sm"
       >
-        <span className="truncate">{session.title}</span>
+        {session.title}
       </Link>
-      <div className="pr-1.5">
+      <div className="shrink-0 pr-1.5">
         <SessionItemActions session={session} />
       </div>
     </div>
