@@ -1,4 +1,5 @@
 import { anthropic } from '@ai-sdk/anthropic';
+import * as Sentry from '@sentry/nextjs';
 import { streamText } from 'ai';
 import { z } from 'zod';
 
@@ -44,6 +45,7 @@ export async function POST(request: Request): Promise<Response> {
     });
     return result.toTextStreamResponse();
   } catch (err) {
+    Sentry.captureException(err, { tags: { route: '/api/chat' } });
     console.error('[/api/chat] stream initialization failed', err);
     return Response.json({ error: 'Failed to initialize chat stream' }, { status: 500 });
   }

@@ -1,5 +1,6 @@
 'use client';
 
+import * as Sentry from '@sentry/nextjs';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useRef, useState } from 'react';
 import { useAppContainer } from '@/components/providers/app-container-provider';
@@ -8,6 +9,7 @@ import { DEFAULT_TITLE } from '@/domain/entities/session';
 import { makeMessageId } from '@/domain/value-objects/message-id';
 import { makeSessionId } from '@/domain/value-objects/session-id';
 import type { SessionDetail } from '@/application/use-cases/get-session';
+import { SimulatedFailureError } from '@/infrastructure/simulation/failure-simulator';
 import { sessionDetailQueryKey } from './use-session-detail';
 import { SESSIONS_QUERY_KEY } from './use-sessions';
 
@@ -109,6 +111,14 @@ export function useStreamChat(sessionIdRaw: string): UseStreamChatResult {
             // best effort
           }
         } else {
+          if (err instanceof SimulatedFailureError) {
+            Sentry.captureException(err, {
+              tags: { source: 'stream-chat', simulated: 'true' },
+              level: 'info',
+            });
+          } else {
+            Sentry.captureException(err, { tags: { source: 'stream-chat' } });
+          }
           throw err;
         }
       } finally {

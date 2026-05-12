@@ -1,6 +1,7 @@
 'use client';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import { SentryDemoButton } from '@/components/sentry-demo-button';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { useSessions } from '@/hooks/use-sessions';
 import { groupSessionsByDate } from '@/lib/group-sessions-by-date';
@@ -20,7 +21,8 @@ export function SidebarContent() {
       <nav className="scrollbar-thin min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-2 pb-2">
         <SessionList />
       </nav>
-      <footer className="flex h-12 items-center justify-end border-t border-sidebar-border px-3">
+      <footer className="flex h-12 items-center justify-end gap-1 border-t border-sidebar-border px-3">
+        <SentryDemoButton />
         <ThemeToggle />
       </footer>
     </>

@@ -1,4 +1,5 @@
 import { anthropic } from '@ai-sdk/anthropic';
+import * as Sentry from '@sentry/nextjs';
 import { generateText } from 'ai';
 import { z } from 'zod';
 
@@ -49,6 +50,7 @@ export async function POST(request: Request): Promise<Response> {
 
     return Response.json({ title });
   } catch (err) {
+    Sentry.captureException(err, { tags: { route: '/api/title' } });
     console.error('[/api/title] generation failed', err);
     return Response.json({ error: 'Failed to generate title' }, { status: 500 });
   }
