@@ -10,8 +10,50 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
+type DocumentWithViewTransition = Document & {
+  startViewTransition?: (callback: () => void) => {
+    ready: Promise<void>;
+    finished: Promise<void>;
+  };
+};
+
 export function ThemeToggle() {
   const { setTheme } = useTheme();
+
+  const handleChange = (newTheme: string, event: React.MouseEvent<HTMLDivElement>) => {
+    const doc = document as DocumentWithViewTransition;
+    if (typeof doc.startViewTransition !== 'function') {
+      setTheme(newTheme);
+      return;
+    }
+
+    const x = event.clientX;
+    const y = event.clientY;
+    const endRadius = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y),
+    );
+
+    const transition = doc.startViewTransition(() => {
+      setTheme(newTheme);
+    });
+
+    void transition.ready.then(() => {
+      document.documentElement.animate(
+        {
+          clipPath: [
+            `circle(0px at ${x}px ${y}px)`,
+            `circle(${endRadius}px at ${x}px ${y}px)`,
+          ],
+        },
+        {
+          duration: 450,
+          easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+          pseudoElement: '::view-transition-new(root)',
+        },
+      );
+    });
+  };
 
   return (
     <DropdownMenu>
@@ -22,15 +64,15 @@ export function ThemeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme('light')}>
+        <DropdownMenuItem onClick={(event) => handleChange('light', event)}>
           <Sun className="mr-2 size-4" />
           Light
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('dark')}>
+        <DropdownMenuItem onClick={(event) => handleChange('dark', event)}>
           <Moon className="mr-2 size-4" />
           Dark
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('system')}>
+        <DropdownMenuItem onClick={(event) => handleChange('system', event)}>
           <Monitor className="mr-2 size-4" />
           System
         </DropdownMenuItem>

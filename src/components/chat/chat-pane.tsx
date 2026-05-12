@@ -57,8 +57,8 @@ export function ChatPane({ sessionId }: ChatPaneProps) {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <header className="flex h-12 items-center border-b border-border px-6">
-        <h2 className="truncate text-sm font-medium">{data.session.title}</h2>
+      <header className="flex h-14 items-center border-b border-border px-6">
+        <h2 className="font-display truncate text-base font-medium">{data.session.title}</h2>
       </header>
       {showEmptyState ? (
         <EmptyChatState onPromptSelect={setInput} />

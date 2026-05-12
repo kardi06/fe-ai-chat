@@ -11,11 +11,11 @@ import { SessionGroup } from './session-group';
 
 export function Sidebar() {
   return (
-    <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-sidebar md:flex">
-      <header className="flex h-12 items-center px-4">
-        <h1 className="text-sm font-semibold tracking-tight">MyConnect.ai</h1>
+    <aside className="hidden w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar md:flex">
+      <header className="flex h-14 items-center px-5">
+        <h1 className="font-display text-lg font-medium tracking-tight">MyConnect.ai</h1>
       </header>
-      <div className="px-3 pb-2">
+      <div className="px-3 pb-3">
         <NewChatButton />
       </div>
       <ScrollArea className="flex-1">
@@ -23,7 +23,7 @@ export function Sidebar() {
           <SessionList />
         </div>
       </ScrollArea>
-      <footer className="flex h-12 items-center justify-end border-t border-border px-3">
+      <footer className="flex h-12 items-center justify-end border-t border-sidebar-border px-3">
         <ThemeToggle />
       </footer>
     </aside>
