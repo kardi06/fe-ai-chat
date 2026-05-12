@@ -1,11 +1,8 @@
-import * as Sentry from '@sentry/nextjs';
-
-Sentry.init({
-  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-  enabled: !!process.env.NEXT_PUBLIC_SENTRY_DSN,
-  tracesSampleRate: 1.0,
-  replaysOnErrorSampleRate: 1.0,
-  replaysSessionSampleRate: 0.1,
-  integrations: [Sentry.replayIntegration()],
-  debug: false,
-});
+// Sentry client initialization moved to `instrumentation-client.ts` for
+// compatibility with Turbopack (Next.js 15+ default). Turbopack does not
+// load this file via Sentry's webpack plugin; the new `instrumentation-client.ts`
+// is loaded natively by Next.js regardless of bundler.
+//
+// This stub is intentionally empty to avoid duplicate `Sentry.init()` calls
+// if a future webpack fallback discovers this file.
+export {};
