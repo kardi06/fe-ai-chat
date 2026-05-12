@@ -1,7 +1,10 @@
 'use client';
 
+import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useSessionDetail } from '@/hooks/use-session-detail';
+import { useStreamChat } from '@/hooks/use-stream-chat';
+import { MessageInput } from './message-input';
 import { MessageList } from './message-list';
 
 interface ChatPaneProps {
@@ -10,6 +13,7 @@ interface ChatPaneProps {
 
 export function ChatPane({ sessionId }: ChatPaneProps) {
   const { data, isPending, isError } = useSessionDetail(sessionId);
+  const { streamingMessage, isStreaming, send, stop } = useStreamChat(sessionId);
 
   if (isPending) {
     return (
@@ -33,17 +37,25 @@ export function ChatPane({ sessionId }: ChatPaneProps) {
     );
   }
 
+  const allMessages = streamingMessage ? [...data.messages, streamingMessage] : data.messages;
+
+  const handleSend = (content: string) => {
+    send(content).catch((err: unknown) => {
+      toast.error('Failed to send message', {
+        description: err instanceof Error ? err.message : 'Unknown error',
+      });
+    });
+  };
+
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <header className="flex h-12 items-center border-b border-border px-6">
         <h2 className="truncate text-sm font-medium">{data.session.title}</h2>
       </header>
-      <MessageList messages={data.messages} />
-      <footer className="border-t border-border p-4">
-        <p className="mx-auto max-w-3xl text-center text-xs text-muted-foreground">
-          Message input mounts in Phase 5.2.
-        </p>
-      </footer>
+      <MessageList messages={allMessages} />
+      <div className="border-t border-border">
+        <MessageInput onSend={handleSend} onStop={stop} isStreaming={isStreaming} />
+      </div>
     </div>
   );
 }
