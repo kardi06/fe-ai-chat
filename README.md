@@ -2,8 +2,8 @@
 
 A Next.js + TypeScript chat application that lets users view, create, and manage AI conversations. Built as a take-home submission for the MyConnect.ai Senior Front-End Engineer role.
 
-- **Live demo:** _(Vercel URL — added after Phase 8 deploy)_
-- **Walkthrough:** _(Loom link — 5–8 min)_
+- **Live demo:** <https://myconnect-ai-1b5mbwau1-jerpons-projects.vercel.app/>
+- **Walkthrough:** _(Loom link — added after Phase 9 recording)_
 
 ---
 
