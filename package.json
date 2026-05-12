@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "analyze": "next build --webpack"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.76",
