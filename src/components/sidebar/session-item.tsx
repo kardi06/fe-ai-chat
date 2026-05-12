@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import type { Session } from '@/domain/entities/session';
+import { useSidebarClose } from './sidebar-context';
 import { SessionItemActions } from './session-item-actions';
 
 interface SessionItemProps {
@@ -12,6 +13,7 @@ interface SessionItemProps {
 
 export function SessionItem({ session }: SessionItemProps) {
   const pathname = usePathname();
+  const closeSidebar = useSidebarClose();
   const href = `/sessions/${session.id}`;
   const active = pathname === href;
 
@@ -27,6 +29,7 @@ export function SessionItem({ session }: SessionItemProps) {
       <Link
         href={href}
         title={session.title}
+        onClick={closeSidebar}
         className="flex min-w-0 flex-1 items-center px-3 py-2 text-sm"
       >
         <span className="truncate">{session.title}</span>
