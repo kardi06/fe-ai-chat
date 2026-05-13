@@ -20,7 +20,7 @@ export function ChatPane({ sessionId }: ChatPaneProps) {
 
   if (isPending) {
     return (
-      <div className="flex flex-1 flex-col">
+      <main className="flex flex-1 flex-col">
         <div className="flex h-12 items-center border-b border-border px-6">
           <Skeleton className="h-4 w-32" />
         </div>
@@ -28,15 +28,15 @@ export function ChatPane({ sessionId }: ChatPaneProps) {
           <Skeleton className="ml-auto h-12 w-2/3 rounded-2xl" />
           <Skeleton className="h-20 w-full" />
         </div>
-      </div>
+      </main>
     );
   }
 
   if (isError || !data) {
     return (
-      <div className="flex flex-1 items-center justify-center p-8">
+      <main className="flex flex-1 items-center justify-center p-8">
         <p className="text-sm text-muted-foreground">Conversation not found.</p>
-      </div>
+      </main>
     );
   }
 
@@ -56,7 +56,7 @@ export function ChatPane({ sessionId }: ChatPaneProps) {
   };
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <main className="flex min-h-0 flex-1 flex-col">
       <header className="flex h-14 items-center border-b border-border px-6">
         <h2 className="font-display truncate text-base font-medium">{data.session.title}</h2>
       </header>
@@ -74,6 +74,6 @@ export function ChatPane({ sessionId }: ChatPaneProps) {
           isStreaming={isStreaming}
         />
       </div>
-    </div>
+    </main>
   );
 }
