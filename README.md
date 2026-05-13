@@ -2,8 +2,7 @@
 
 A Next.js + TypeScript chat application that lets users view, create, and manage AI conversations. Built as a take-home submission for the MyConnect.ai Senior Front-End Engineer role.
 
-- **Live demo:** <https://myconnect-ai-1b5mbwau1-jerpons-projects.vercel.app/>
-- **Walkthrough:** _(Loom link — added after Phase 9 recording)_
+- **Live demo:** <https://myconnect-ai-fe.vercel.app/>
 
 ---
 
@@ -269,6 +268,38 @@ Sentry init is **opt-in per environment** via `enabled: !!process.env.NEXT_PUBLI
 ### Bundle analyzer
 
 `@next/bundle-analyzer` is wired via `next.config.ts` and gated by `ANALYZE=true`. Run `pnpm analyze` to produce HTML treemaps.
+
+---
+
+## Lighthouse audit
+
+Measured with Chrome DevTools Lighthouse on the production URL (Navigation mode, Incognito).
+
+| Category | Desktop | Mobile | Notes |
+|---|---|---|---|
+| Performance | 79 | 70 | LCP 1.3 s, CLS 0, FCP 0.3 s. TBT (~330 ms) is the main drag — dominated by parse + eval of the React 19 / AI SDK / Shiki client bundle. |
+| Accessibility | 100 | 100 | After fixes: removed faded `text-muted-foreground/70`, replaced sidebar group `<h3>` with `<div>` to keep heading order valid, and wrapped `ChatPane` in a `<main>` landmark. |
+| Best Practices | 100 | 100 | HTTPS, no console errors, no deprecated APIs. |
+| SEO | 100 | 100 | When measured on the production alias URL. Vercel deployment URLs (`<project>-<hash>-<scope>.vercel.app`) ship `x-robots-tag: noindex` as a preview safeguard, which Lighthouse correctly flags as not-crawlable. |
+
+### Performance trade-offs
+
+The 79 Desktop / 70 Mobile is driven by ~800 KiB of transferred JavaScript across:
+
+- React 19 + Next.js 16 runtime
+- `@ai-sdk/anthropic` + `ai` (streaming runtime)
+- `shiki` (syntax highlighting — currently eager-loaded)
+- `react-markdown` + `remark-gfm`
+- `@sentry/nextjs` browser SDK + Replay integration
+
+Concrete next steps to reach 90+ that were deliberately deferred:
+
+1. **Lazy-load Shiki** via `import()` inside `CodeBlock` (~50 KiB saved).
+2. **Code-split the markdown renderer** so the home route doesn't ship `react-markdown` (~80 KiB saved).
+3. **Drop Sentry Replay** if Session Replay isn't required (~60 KiB saved).
+4. **Tune target browsers** to skip `Array.at` / `Object.fromEntries` polyfills (~15 KiB per Lighthouse's `legacy-javascript` audit).
+
+Estimated effort: 2–3 hours of focused refactoring. Acceptable for a future PR; out of scope for the take-home budget.
 
 ---
 
